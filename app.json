@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "presences-app",
-    "slug": "presences-app",
+    "slug": "presences",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icons.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/receca.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,12 +16,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icons.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.receca.presences"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3e4d6c45-1ad4-4bec-8170-e49337f356a6"
+      }
+    },
+    "owner": "cochou"
   }
 }
