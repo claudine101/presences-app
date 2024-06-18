@@ -1,6 +1,5 @@
-
-import React, { useRef, useState } from 'react';
-import { StyleSheet, TextInput, Text, Button, Alert, View, useWindowDimensions, TouchableWithoutFeedback, Image, ScrollView } from "react-native";
+import React, { useRef, useState, useEffect, useCallback } from 'react'
+import { ImageBackground, ScrollView, StyleSheet, Image, Text, TouchableOpacity, TouchableWithoutFeedback, View, useWindowDimensions, StatusBar } from "react-native";
 import { TextField, FilledTextField, InputAdornment, OutlinedTextField } from 'rn-material-ui-textfield'
 import { FontAwesome, Fontisto, EvilIcons, AntDesign, Feather, Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -52,7 +51,7 @@ export default function ConnexionScreen() {
   })
 
   const [additioanalErrors, setAdditionalErrors] = useState({})
-    ;
+
 
   const handleLogin = async () => {
     const user = {
@@ -61,17 +60,26 @@ export default function ConnexionScreen() {
       PUSH_NOTIFICATION_TOKEN: token,
       // DEVICE: Platform.OS === 'ios' ? 1 : 0
     }
-
+    // console.log(user)
     try {
       setLoading(true)
+      // setAdditionalErrors({})
       const form = new FormData()
       form.append('email', data.email)
       form.append('password', data.password)
       form.append('PUSH_NOTIFICATION_TOKEN', token)
+      // form.append('DEVICE', typesOrdres.ID_TYPE_INCIDENT)
+    //  console.log(form)
+
+      // const userData = await fetchApi("/auth/users/login", {
+      //   method: "POST",
+      //   body: JSON.stringify(user),
+      //   headers: { "Content-Type": "application/json" },
+      // });
       const userData = await fetchApi(`/auth/users/login`, {
         method: "POST",
         body: form
-      })
+})
       await AsyncStorage.setItem("user", JSON.stringify(userData.result));
       dispatch(setUserAction(userData.result))
     }
@@ -88,113 +96,98 @@ export default function ConnexionScreen() {
       setLoading(false);
     }
   }
-
   return (
     <>
-    {loading && <Loading />}
+      {loading && <Loading />}
       <ScrollView keyboardShouldPersistTaps='handled'>
-    <View style={styles.container}>
-      <Image source={require('../../../assets/images/receca.png')} style={{...styles.image, resizeMode:"center"}}/>
+          <View style={styles.container}>
+            <Image source={require('../../../assets/images/receca.png')} style={{...styles.image, resizeMode:"center"}}/>
           
-          <Text style={styles.title}>Connexion</Text>
-      <View style={styles.textField}>
-        <Text style={[styles.label, hasError('email') ? styles.errorLabel : null]}>Email</Text>
-        <TextInput
-        
-          value={data.email}
-          onChangeText={
-            (newValue) => {
-              handleChange('email', newValue);
-              checkFieldData('email', newValue);
-            }
-          }
-          keyboardType='email-address'
-          autoCapitalize='none'
-          // style={styles.input}
-          style={[styles.input, hasError('email') ? styles.errorInput : null]}
-        />
-      </View>
-      <View style={styles.textField}>
-        <Text style={[styles.label, hasError('password') ? styles.errorLabel : null]}>Password</Text>
-        <TextInput
-          value={data.password}
-          onChangeText={(newValue) => {
-            handleChange('password', newValue);
-            checkFieldData('password', newValue);
+              <Text style={styles.title}>Connexion</Text>
 
-          }}
-          secureTextEntry
-         style={[styles.input, hasError('password') ? styles.errorInput : null]}
+            <View style={styles.inputCard}>
+              <View>
+                <OutlinedTextField
+                  label="Adresse email"
+                  fontSize={14}
+                  baseColor={COLORS.smallBrown}
+                  tintColor={COLORS.primary}
+                  containerStyle={{ borderRadius: 20 }}
+                  lineWidth={1}
+                  activeLineWidth={1}
+                  errorColor={COLORS.error}
+                  renderRightAccessory={() => <Fontisto name="email" size={20} color={hasError('email') ? COLORS.error : "#a2a2a2"} />}
+                  value={data.email}
+                  onChangeText={(newValue) => handleChange('email', newValue)}
+                  onBlur={() => checkFieldData('email')}
+                  error={hasError('email') ? getError('email') : ''}
+                  onSubmitEditing={() => {
+                    passwordInputRef.current.focus()
+                  }}
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                />
+              </View>
 
-        />
-      </View>
-      <TouchableWithoutFeedback
-        disabled={!isValidate()}
-        onPress={handleLogin} >
-        <View style={[styles.button, !isValidate() && { opacity: 0.5 }]}>
-          <Text style={styles.buttonText}>Se connecter</Text>
-        </View>
-      </TouchableWithoutFeedback>
-      {additioanalErrors.main && <View>
-        <View style={styles.button2}>
-          <View style={{ marginLeft: 10 }}>
-            <AntDesign name="closecircleo" size={24} color="white" />
+            </View>
+            <View style={[styles.inputCard, { marginTop: 20 }]}>
+              <View>
+                <OutlinedTextField
+                  label="Mot de passe"
+                  fontSize={14}
+                  baseColor={COLORS.smallBrown}
+                  tintColor={COLORS.primary}
+                  secureTextEntry={!showPassword}
+                  lineWidth={1}
+                  activeLineWidth={1}
+                  errorColor={COLORS.error}
+                  renderRightAccessory={() => <Ionicons name={!showPassword ? "eye-off-outline" : "eye-outline"} size={25} color={hasError('password') ? COLORS.error : "#a2a2a2"}
+                    onPress={() => setShowPassword(t => !t)} />}
+                  value={data.password}
+                  onChangeText={(newValue) => handleChange('password', newValue)}
+                  onBlur={() => checkFieldData('password')}
+                  error={hasError('password') ? getError('password') : ''}
+                  ref={passwordInputRef}
+                  onSubmitEditing={() => {
+                    // password_confirmInputRef.current.focus()
+                  }}
+          //         autoCompleteType='off'
+          //         returnKeyType="next"
+          //         blurOnSubmit={false}
+                />
+              </View>
+
+            </View>
+
+            <TouchableWithoutFeedback
+              disabled={!isValidate()}
+              onPress={handleLogin} >
+              <View style={[styles.button,!isValidate() && { opacity: 0.5 }]}>
+                <Text style={styles.buttonText}>Se connecter</Text>
+              </View>
+            </TouchableWithoutFeedback>
+
+            {additioanalErrors.main && <View>
+              <View style={styles.button2}>
+                <View style={{ marginLeft: 10 }}>
+                  <AntDesign name="closecircleo" size={24} color="white" />
+                </View>
+                <View style={{ marginLeft: 10 }}>
+                  {errors && <Text style={styles.buttonText}>{additioanalErrors.main[0]} </Text>}
+                </View>
+
+              </View>
+            </View>}
           </View>
-          <View style={{ marginLeft: 10 }}>
-            {errors && <Text style={styles.buttonText}>{additioanalErrors.main[0]} </Text>}
-          </View>
-
-        </View>
-      </View>}
-    </View>
-  </ScrollView>
-  </>
-  );
+          </ScrollView>
+    </>
+  )
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     paddingHorizontal: 16,
-//   },
-//   textField: {
-//     height: 40,
-//     borderColor: 'gray',
-//     borderWidth: 1,
-//     borderRadius: 4,
-//     paddingHorizontal: 8,
-//     marginBottom: 16,
-//   },
-// });
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-  },
-  textField: {
-    marginBottom: 16,
-  },
-  errorInput: {
-    borderColor: 'red',
-  },
-  errorText: {
-    color: 'red',
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 20,
-    marginBottom: 4,
-  fontWeight: 'bold',
-    color: COLORS.primary,
-  },
-  input: {
-    height: 60,
-    borderColor: COLORS.primary,
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 20,
+  inputCard: {
+    marginHorizontal: 20,
+    marginTop: 10
   },
   button: {
     // marginTop: 10,
@@ -202,7 +195,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 10,
     backgroundColor: COLORS.primary,
-    marginVertical: 20
+    marginHorizontal: 20,
+    marginVertical:30
   },
   buttonText: {
     color: "#fff",
@@ -210,8 +204,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center"
   },
-  errorLabel: {
-    color: 'red', // Couleur du label en cas d'erreur
+  button2: {
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 10,
+    backgroundColor: "#D24646",
+    marginHorizontal: 40,
+    marginTop: 15,
+    alignItems: "center",
+    flexDirection: "row",
+  },
+
+  container: {
+    flex: 1,
   },
   image:{
     maxWidth: '80%',
@@ -226,14 +231,9 @@ title: {
   color:COLORS.primary,
   paddingHorizontal: 20
 },
-button2: {
-  borderRadius: 8,
-  paddingVertical: 14,
-  paddingHorizontal: 10,
-  backgroundColor: "#D24646",
-  marginHorizontal: 40,
-  marginTop: 15,
-  alignItems: "center",
+cardTitle: {
   flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center"
 },
-});
+})

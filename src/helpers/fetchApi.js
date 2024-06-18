@@ -3,9 +3,8 @@ import cache from "../utils/cache";
 export const API_URL = false
   ? "https://prodev.mediabox.bi:33204"
   : "http://192.168.1.252:5000";
-  // :"http://192.168.177.241:3000";
+  // : "http://192.168.90.241:3000";
   // : "http://localhost:3000";
-
 
 /**
  * consomer une api avec les options par défaut
@@ -38,6 +37,8 @@ export default async function fetchApi(url, options = initialOptions) {
       headers: { ...options.headers, authorization: `bearer ${user.token}` },
     };
   }
+// console.log(API_URL + url)
+
   const response = await fetch(API_URL + url, {
     ...options,
   });
