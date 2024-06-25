@@ -103,7 +103,7 @@ export default function ConnexionScreen() {
           <View style={styles.container}>
             <Image source={require('../../../assets/images/receca.png')} style={{...styles.image, resizeMode:"center"}}/>
           
-              <Text style={styles.title}>Connexion</Text>
+              <Text style={styles.title}>Connexions</Text>
 
             <View style={styles.inputCard}>
               <View>
