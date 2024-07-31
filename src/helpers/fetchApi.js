@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import cache from "../utils/cache";
 export const API_URL =true?
     "http://192.168.1.252:5000"
-   : "http://192.168.90.241:5000";
+   : "http://192.168.56.1:5000";
 console.log(API_URL)
 /**
  * consomer une api avec les options par défaut
